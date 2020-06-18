@@ -7,22 +7,9 @@
 using namespace std;
 
 
-template<class T>
 struct Huffman {
-    struct node {
-        int val;
-        T code;
-        node *left, *right;
-        node(T c, int v) {
-            val = v; code = c;
-            left = right = NULL;
-        }
-    };
-    // vector<T> codes;
-    // vector<int> cnt;
-    unordered_map<T, string> mp;
-    // Huffman(vector<T> v, vector<int> c): codes(v), cnt(c){}
-    void encode(vector<T> codes, vector<int> cnt) {
+    unordered_map<char, string> mp;
+    void build(vector<char> codes, vector<int> cnt) {
         auto c = [](node *l, node *r) { return l->val > r->val;};
         priority_queue<node*, vector<node*>, decltype(c)> que(c);
         
@@ -36,11 +23,43 @@ struct Huffman {
             par->left = left; par->right = right;
             que.push(par);
         }
-        node* top = que.top(); que.pop();
-        search(top);
+        root = que.top(); que.pop();
+        search(root);
+    }
+
+    string encode(string s) {
+        string ans = "";
+        for(int i=0; i<s.size(); i++) {
+            ans += mp[s[i]];
+        }
+        return ans;
+    }
+
+    string decode(string v) {
+        node* cur = root;
+        string ans = "";
+        for(int i=0; i<v.size(); i++) {
+            if(v[i]=='0') cur = cur->left;
+            else cur = cur->right;
+            if(cur->left == NULL and cur->right == NULL) {
+                ans += cur->code;
+                cur = root;
+            }
+        }
+        return ans;
     }
 
 private:
+    struct node {
+        int val;
+        char code;
+        node *left, *right;
+        node(char c, int v) {
+            val = v; code = c;
+            left = right = NULL;
+        }
+    };
+    node* root;
     void search(node* nd, string s="") {
         if(nd->left == NULL and nd->right == NULL) {
             mp[nd->code] = s;
@@ -58,11 +77,17 @@ private:
 int main() {
     vector<char> v = {'a', 'b', 'c', 'd', 'r'};
     vector<int> cnt = {5, 2, 1, 1, 2};
-    Huffman<char> hf;
-    hf.encode(v, cnt);
+    Huffman hf;
+    hf.build(v, cnt);
     for(auto [k, v]: hf.mp) {
         cout << k << " " << v << endl;
     }
+
+    string input = "ard";
+    string encoded = hf.encode(input);
+    cout << encoded << endl;
+
+    cout << hf.decode(encoded) << endl;
 
     return 0;
 }
