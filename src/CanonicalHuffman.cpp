@@ -82,6 +82,7 @@ struct CanonicalHaffman {
         }
         return ans;
     } 
+private:
     node* build_haffman_tree(vector<char> codes, vector<int> cnt) {
         auto c = [](node *l, node *r) { return l->val > r->val;};
         priority_queue<node*, vector<node*>, decltype(c)> que(c);
@@ -146,5 +147,5 @@ int main() {
     vector<int> cnt = {5, 2, 1, 1, 2};
 
     cf.build(v2, cnt);
-    cout << cf.decode("1100101110") << "\n"; // "rabc"
+    cout << cf.decode("11111100101110") << "\n"; // "drabc"
 }
