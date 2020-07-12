@@ -171,4 +171,10 @@ bool LZ77Encode(const std::vector<T>& data, std::vector<Code>& packed, u32 index
     return true;
 }
 
+template<class T, class Code>
+bool LZ77Decode(const std::vector<Code>& packed, std::vector<T>& data, u32 indexBit, typename std::vector<T>::size_type dataCount)
+{
+    return true;
+}
+
 #endif

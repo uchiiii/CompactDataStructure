@@ -51,4 +51,64 @@ void WriteToArray
   W2A_SetLastCode( data, length, cachedCode, cachedLen);
 }
 
+template<class Data, typename Code, typename Len>
+bool RFA_GetFromCache(typename std::vector<Code>::const_iterator& cit, const typename std::vector<Code>::const_iterator& decEnd, Code& cachedCode, Len& cachedLen, Data& data, Len& length)
+{
+    const Len szCode = std::numeric_limits<Code>::digits;
+
+    if(cachedLen < length) { // when cached is not enough
+        if(cit == decEnd) return false;
+        // use cached code
+        data = cachedCode & ~(~((Code)0) << cachedLen); 
+        cachedCode = *(cit++);
+        length -= cachedLen;
+        cachedLen = szCode;
+    } else { // when cached is enough
+        cachedLen -= length; // now cachedLen is unnecessary part
+        if(length == szCode) {
+            data = cachedCode;
+        } else {
+            data = (cachedCode >> cachedLen) & ~(~((Code) 0) << length);
+        }
+        length = 0;
+    }
+    return true;
+}
+
+template<class Data,typename Code,typename Len>
+bool RFA_GetLoop(typename std::vector<Code>::const_iterator& cit, const typename std::vector<Code>::const_iterator& decEnd, Code& cachedCode, Len& cachedLen, Data& data, Len& length)
+{
+    const Len szCode = std::numeric_limits<Code>::digits;
+
+    while(length >= szCode) {
+        data = (data << szCode) | cachedCode;
+        length -= szCode;
+        if(length > 0 and cit==decEnd) return false;
+        if(cit != decEnd) cachedCode = *(cit++);
+    } 
+    return true;
+}
+
+template<class Data,typename Code,typename Len>
+void RFA_GetLastCode
+( Data& data, Len length, Code& cacheCode, Len& cacheLen )
+{
+    const Len szCode = std::numeric_limits<Code>::digits;
+
+    if(length > 0) {
+        data = (data << length) | (cacheCode >> (szCode-length));
+        cacheLen -= length;
+    }
+}
+
+template<class Data,typename Code,typename Len>
+bool ReadFromArray(typename std::vector<Code>::const_iterator& cit, const typename std::vector<Code>::const_iterator& decEnd, Code& cachedCode, Len& cachedLen, Data& data, Len& length)
+{
+    if(!RFA_GetFromCache(cit, decEnd, cachedCode, cachedLen, data, length)) return false;
+    if(!RFA_GetLoop(cit, decEnd, cachedCode, cachedLen, data, length)) return false;
+    RFA_GetLastCode(data, length, cachedCode, cachedLen);
+
+    return true;
+}
+
 #endif
