@@ -3,7 +3,9 @@
 #include<vector>
 
 int main() {
-    std::vector<char> data = {'a', 'a', 'a', 'a'}; //, 'b', 'r', 'a', 'c', 'a', 'd', 'a', 'b', 'r', 'a'};
+    std::vector<char> data; // = {'a', 'a', 'a', 'a'}; //, 'b', 'r', 'a', 'c', 'a', 'd', 'a', 'b', 'r', 'a'};
+    for(int i=0; i<20; i++) data.push_back('a');
+    
     std::vector<u32> encoded;
 
     u32 indexBit = 16;

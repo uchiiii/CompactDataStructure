@@ -205,13 +205,14 @@ bool LZ77Decode(const std::vector<Code>& packed, std::vector<T>& data, u32 index
         if(!ReadFromArray<T, Code, u32>(cit, packed.end(), cachedCode, cachedLen, isCode, (u32) 1)) return false;
         // std::cout << "isCode:" << (int) isCode << std::endl;
         if(isCode != 0) {
+            std::cout << codeGen.bits();
             if(!ReadFromArray<Code, Code, u32>(cit, packed.end(), cachedCode, cachedLen, code, codeGen.bits())) return false;
-
             codeGen.decode(code, index, count);
             typename std::vector<T>::size_type read_pos = data.size() - index;
             
-            for(; read_pos < data.size()-index+count; ++read_pos) { // bug あるかも
+            for(u32 sz = 0; sz < count; sz++) { 
                 data.push_back(data[read_pos]);
+                read_pos++;
             }
 
             st += count;

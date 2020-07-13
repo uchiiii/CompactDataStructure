@@ -16,3 +16,11 @@ Implementation of data structures in "Compact Data Structure"
 - succBV
 
 #### Tree
+
+
+### Execution
+You can execute file(.cpp) with the following command.
+```
+$ cd src
+$ g++ -std=c++17 <hoge>.cpp
+```

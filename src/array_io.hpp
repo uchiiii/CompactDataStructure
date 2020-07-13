@@ -54,7 +54,6 @@ template<class Data, typename Code, typename Len>
 bool RFA_GetFromCache(typename std::vector<Code>::const_iterator& cit, const typename std::vector<Code>::const_iterator& decEnd, Code& cachedCode, Len& cachedLen, Data& data, Len& length)
 {
     const Len szCode = std::numeric_limits<Code>::digits;
-
     if(cachedLen < length) { // when cached is not enough
         if(cit == decEnd) return false;
         // use cached code
@@ -89,11 +88,9 @@ bool RFA_GetLoop(typename std::vector<Code>::const_iterator& cit, const typename
 }
 
 template<class Data,typename Code,typename Len>
-void RFA_GetLastCode
-( Data& data, Len length, Code& cacheCode, Len& cacheLen )
+void RFA_GetLastCode(Data& data, Len length, Code& cacheCode, Len& cacheLen)
 {
     const Len szCode = std::numeric_limits<Code>::digits;
-
     if(length > 0) {
         data = (data << length) | (cacheCode >> (szCode-length));
         cacheLen -= length;
