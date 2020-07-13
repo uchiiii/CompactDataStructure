@@ -3,18 +3,36 @@
 #include<vector>
 
 int main() {
-    std::vector<char> data = {'a', 'b', 'r', 'a', 'c', 'a', 'd', 'a', 'b', 'r', 'a'};
+    std::vector<char> data = {'a', 'a', 'a', 'a'}; //, 'b', 'r', 'a', 'c', 'a', 'd', 'a', 'b', 'r', 'a'};
     std::vector<u32> encoded;
+
+    u32 indexBit = 16;
     SlidingWindowSearch<typename std::vector<char>::const_iterator, u32> swSearch;
 
-    std::cout << "data size: " << data.size() * sizeof(char) << std::endl;
+    std::cout << "input data size: " << data.size() * sizeof(char) << " (byte)" << std::endl;
 
-    if(LZ77Encode<char, u32, SlidingWindowSearch>(data, encoded, 16, swSearch)) {
+    
+    if(LZ77Encode<char, u32, SlidingWindowSearch>(data, encoded, indexBit, swSearch)) {
+        std::cout << "--------------------------------------------------------------\n";
         for(auto &e: encoded) {
+            std::cout << e << " ";
+            for(int i=31; i>=0; i--) {
+                std::cout << ((e >> i) & 1);
+            }
+            std::cout << "\n";
+        }
+
+        std::cout << "--------------------------------------------------------------\n"; 
+        std::cout << "encoded size: " << encoded.size()*sizeof(u32) << " (byte)" << std::endl; 
+    }
+
+    std::vector<char> decoded;
+
+    if(LZ77Decode<char, u32>(encoded, decoded, indexBit, (u32) data.size())) {
+        std::cout << "decoded: ";
+        for(auto &e: decoded) {
             std::cout << e << " ";
         }
         std::cout << "\n";
-
-        std::cout << "encoded size: " << encoded.size()*sizeof(u32) << std::endl; 
     }
 }

@@ -1,6 +1,7 @@
 #ifndef LZ77_hpp
 #define LZ77_hpp
 
+#include<iostream>
 #include<vector>
 #include "array_io.hpp"
 
@@ -51,7 +52,7 @@ void SlidingWindowSearch<In, Code>::operator()(In dataStart, In dataEnd, Code wi
     for(;winStart!=dataStart; ++winStart) {
         In winP = winStart;
 
-        for(In dataP = dataStart; *winP==*dataP; dataP++) {
+        for(In dataP = dataStart; *winP==*dataP and winP != dataStart; dataP++) { // winP should not get over dataStart
             if(dataP == dataEnd) break;
             ++winP;
         }
@@ -153,6 +154,8 @@ bool LZ77Encode(const std::vector<T>& data, std::vector<Code>& packed, u32 index
     packed.clear();
     while(!sWin.empty()) {
         sWin.search(swSearch, index, count);
+        // std::cout << "index:" << index << std::endl;
+        // std::cout << "count:" << count << std::endl;
 
         if(count * szValue > szCode) {
             WriteToArray((Code)1, (u32)1, cachedCode, cachedLen, packed);
@@ -163,6 +166,7 @@ bool LZ77Encode(const std::vector<T>& data, std::vector<Code>& packed, u32 index
             WriteToArray(sWin.value(), bitValue, cachedCode, cachedLen, packed);
             sWin.increment(1);
         }
+        // std::cout << "cachedLen:" << cachedLen << std::endl;
     }
 
     if(cachedLen > 0) //  上のelseの時に残った分を埋める.
@@ -174,6 +178,50 @@ bool LZ77Encode(const std::vector<T>& data, std::vector<Code>& packed, u32 index
 template<class T, class Code>
 bool LZ77Decode(const std::vector<Code>& packed, std::vector<T>& data, u32 indexBit, typename std::vector<T>::size_type dataCount)
 {
+    const u32 szCode = sizeof(Code) / sizeof(char);
+    const u32 bitCode = std::numeric_limits<Code>::digits;
+    const u32 bitValue = std::numeric_limits<T>::digits;
+    
+    if(packed.size() == 0) return false;
+
+    if(indexBit >= bitCode) return false;
+
+    u32 countBit = bitCode - indexBit;
+
+    Code cachedCode = 0;
+    u32 cachedLen = 0;
+    Code code;
+    Code index = 0;
+    Code count = 0;
+    T isCode;
+    T t; 
+
+    LZ77_CodeGenerator<Code> codeGen(indexBit, countBit);
+
+    auto cit = packed.begin();
+    typename std::vector<T>::size_type st = 0; // # of decoded data
+
+    while(st < dataCount) {
+        if(!ReadFromArray<T, Code, u32>(cit, packed.end(), cachedCode, cachedLen, isCode, (u32) 1)) return false;
+        // std::cout << "isCode:" << (int) isCode << std::endl;
+        if(isCode != 0) {
+            if(!ReadFromArray<Code, Code, u32>(cit, packed.end(), cachedCode, cachedLen, code, codeGen.bits())) return false;
+
+            codeGen.decode(code, index, count);
+            typename std::vector<T>::size_type read_pos = data.size() - index;
+            
+            for(; read_pos < data.size()-index+count; ++read_pos) { // bug あるかも
+                data.push_back(data[read_pos]);
+            }
+
+            st += count;
+        } else {
+            if(!ReadFromArray<T, Code, u32>(cit, packed.end(), cachedCode, cachedLen, t, (u32) bitValue)) return false;
+            data.push_back(t);
+            st++;
+        }
+    }
+
     return true;
 }
 

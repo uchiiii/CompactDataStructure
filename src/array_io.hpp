@@ -43,8 +43,7 @@ void W2A_SetLastCode(const Data& data, Len& length, Code& cachedCode, Len& cache
 }
 
 template<class Data,typename Code,typename Len>
-void WriteToArray
-( const Data& data, Len length, Code& cachedCode, Len& cachedLen, std::vector<Code>& encData)
+void WriteToArray(const Data& data, Len length, Code& cachedCode, Len& cachedLen, std::vector<Code>& encData)
 {
   W2A_PushOnce( data, length, cachedCode, cachedLen, encData );
   W2A_PushLoop( data, length, encData );
@@ -81,7 +80,7 @@ bool RFA_GetLoop(typename std::vector<Code>::const_iterator& cit, const typename
     const Len szCode = std::numeric_limits<Code>::digits;
 
     while(length >= szCode) {
-        data = (data << szCode) | cachedCode;
+        data = (data << szCode) | cachedCode; // cachedCode is full.
         length -= szCode;
         if(length > 0 and cit==decEnd) return false;
         if(cit != decEnd) cachedCode = *(cit++);
@@ -101,8 +100,11 @@ void RFA_GetLastCode
     }
 }
 
-template<class Data,typename Code,typename Len>
-bool ReadFromArray(typename std::vector<Code>::const_iterator& cit, const typename std::vector<Code>::const_iterator& decEnd, Code& cachedCode, Len& cachedLen, Data& data, Len& length)
+/*
+    Data class to accept both  T and Code.
+*/
+template<class Data,typename Code,typename Len> 
+bool ReadFromArray(typename std::vector<Code>::const_iterator& cit, const typename std::vector<Code>::const_iterator& decEnd, Code& cachedCode, Len& cachedLen, Data& data, Len length)
 {
     if(!RFA_GetFromCache(cit, decEnd, cachedCode, cachedLen, data, length)) return false;
     if(!RFA_GetLoop(cit, decEnd, cachedCode, cachedLen, data, length)) return false;
