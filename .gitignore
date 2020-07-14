@@ -4,3 +4,4 @@
 **/*.o
 **/*.gch
 **/test.cpp
+example/data/**
