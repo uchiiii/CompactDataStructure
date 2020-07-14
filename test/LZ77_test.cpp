@@ -1,4 +1,4 @@
-#include "LZ77.hpp"
+#include "../src/LZ77.hpp"
 #include<iostream>
 #include<vector>
 

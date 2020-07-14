@@ -79,7 +79,7 @@ int main() {
     vector<int> cnt = {5, 2, 1, 1, 2};
     Huffman hf;
     hf.build(v, cnt);
-    for(auto [k, v]: hf.mp) {
+    for(auto &[k, v]: hf.mp) {
         cout << k << " " << v << endl;
     }
 

@@ -1,4 +1,4 @@
-#include "LZ78.hpp"
+#include "../src/LZ78.hpp"
 #include<iostream>
 
 int main() {
