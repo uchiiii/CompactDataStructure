@@ -1,3 +1,6 @@
+#ifndef Huffman_hpp
+#define Huffman_hpp
+
 #include<unordered_map>
 #include<queue>
 #include<iostream>
@@ -9,6 +12,24 @@ using namespace std;
 
 struct Huffman {
     unordered_map<char, string> mp;
+    void build(unordered_map<char,int> mp) {
+        auto c = [](node *l, node *r) { return l->val > r->val;};
+        priority_queue<node*, vector<node*>, decltype(c)> que(c);
+    
+        for(auto &[key, cnt]:mp) {
+            que.push(new node(key, cnt));
+        }
+        while(que.size() != 1) {
+            node* left = que.top(); que.pop();
+            node* right = que.top(); que.pop();
+            node* par = new node('$', left->val + right->val);
+            par->left = left; par->right = right;
+            que.push(par);
+        }
+        root = que.top(); que.pop();
+        search(root); 
+    }
+
     void build(vector<char> codes, vector<int> cnt) {
         auto c = [](node *l, node *r) { return l->val > r->val;};
         priority_queue<node*, vector<node*>, decltype(c)> que(c);
@@ -74,20 +95,4 @@ private:
     }
 };
 
-int main() {
-    vector<char> v = {'a', 'b', 'c', 'd', 'r'};
-    vector<int> cnt = {5, 2, 1, 1, 2};
-    Huffman hf;
-    hf.build(v, cnt);
-    for(auto &[k, v]: hf.mp) {
-        cout << k << " " << v << endl;
-    }
-
-    string input = "ard";
-    string encoded = hf.encode(input);
-    cout << encoded << endl;
-
-    cout << hf.decode(encoded) << endl;
-
-    return 0;
-}
+#endif
