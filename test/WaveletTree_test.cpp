@@ -26,6 +26,5 @@ int main () {
     for(int i=0; i<sigma; i++) {
         cout << wt.select(i, 1) << "\n";
     }
-    // cout << wt.select(0, 1) << "\n";
     return 0;
 }

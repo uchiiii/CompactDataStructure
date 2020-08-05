@@ -16,11 +16,12 @@ Implementation of data structures in "Compact Data Structure"
 - succBV
 
 #### Tree
+- Wavelet Tree
 
 
 ### Execution
 You can execute file(.cpp) with the following command.
 ```
-$ cd src
+$ cd test
 $ g++ -std=c++17 <hoge>.cpp
 ```
