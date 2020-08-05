@@ -64,20 +64,21 @@ struct WaveletTree {
         }
     }
 
-    /* return the minimum i satisfying rank(c, i) = j */
+    /* return the position of jth c in S */
     inline int select(int c, int j) const {
-        return select(c, j, 0, 0, sigma);
+        return select(c, j, 0, 0, sigma) - 1;
     }
 
+    /* return the minimum i satisfying rank(c, i) = j */
     inline int select(int c, int j, int k, int l, int r) const {
         if(r-l==1) return j;
         if(c < (l+r)/2) {
             j = select(c, j, 2*k+1, l, (l+r)/2);
-            // if(j <= 0) return -1;
+            if(j <= 0) return -1;
             return T[k].select0(j);
         } else {
             j = select(c, j, 2*k+2, (l+r)/2, r);
-            // if(j <= 0) return -1;
+            if(j <= 0) return -1;
             return T[k].select1(j);
         }
     }
